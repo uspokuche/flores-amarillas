@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flores Amarillas & Nuestro Inicio 🌻</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle at center, #1c1002 0%, #080401 100%);
+            min-height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 540px;
+            background: rgba(25, 16, 5, 0.9);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            border-radius: 24px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 191, 0, 0.15);
+            margin: auto;
+        }
+
+        .title-cursive {
+            font-family: 'Dancing Script', cursive;
+            color: #ffd700;
+            font-size: 2.6rem;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            margin-bottom: 2px;
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: #e0c38c;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Contador en vivo */
+        .counter-box {
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            border-radius: 14px;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .counter-item span {
+            display: block;
+            font-weight: 700;
+            color: #ffd700;
+            font-size: 1.1rem;
+        }
+
+        .counter-item label {
+            font-size: 0.65rem;
+            color: #d1b894;
+            text-transform: uppercase;
+        }
+
+        .flower-card {
+            display: none;
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .flower-card.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .flower-img-wrapper {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 8px auto;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            animation: floatGlow 3s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        .flower-img-wrapper.girasol-special, .flower-img-wrapper.gallery-img {
+            width: 190px;
+            height: 190px;
+            border-radius: 20px;
+        }
+        
+        .flower-img-wrapper.gallery-img {
+            border-radius: 16px;
+        }
+
+        .flower-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .flower-img-wrapper.girasol-special .flower-img,
+        .flower-img-wrapper.gallery-img .flower-img {
+            border-radius: 14px;
+        }
+
+        .flower-img-wrapper:hover .flower-img {
+            transform: scale(1.03);
+        }
+
+        .click-hint {
+            font-size: 0.72rem;
+            color: #ffd700;
+            margin-bottom: 10px;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        @keyframes floatGlow {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-4px) scale(1.02); }
+        }
+
+        .flower-title {
+            font-size: 1.3rem;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .month-tag {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid #ffd700;
+            color: #ffd700;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .flower-message {
+            font-size: 0.88rem;
+            line-height: 1.45;
+            color: #ebd5b3;
+            margin-bottom: 12px;
+            min-height: 55px;
+        }
+
+        .dots-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #ffd700;
+            box-shadow: 0 0 8px #ffd700;
+            transform: scale(1.2);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ffd700, #ff9100);
+            border: none;
+            border-radius: 50px;
+            color: #1a0d00;
+            padding: 10px 24px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 145, 0, 0.4);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            max-width: 260px;
+            margin-bottom: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .btn-music {
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px solid #ffd700;
+            color: #ffd700;
+            box-shadow: none;
+        }
+
+        .anniversary-badge {
+            background: linear-gradient(90deg, #ff9100, #ffd700);
+            color: #000;
+            font-weight: bold;
+            padding: 4px 14px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* Cupones de Amor Estilos */
+        .coupon-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .coupon-card {
+            background: rgba(255, 215, 0, 0.07);
+            border: 1px dashed #ffd700;
+            border-radius: 12px;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .coupon-card:hover {
+            background: rgba(255, 215, 0, 0.18);
+            transform: scale(1.01);
+        }
+
+        .coupon-info h4 {
+            color: #ffd700;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .coupon-info p {
+            color: #bfa882;
+            font-size: 0.7rem;
+            text-align: left;
+        }
+
+        .coupon-btn {
+            background: #ffd700;
+            color: #1a0d00;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .coupon-card.redeemed {
+            border-style: solid;
+            background: rgba(46, 204, 113, 0.15);
+            border-color: #2ecc71;
+            cursor: default;
+        }
+
+        .coupon-card.redeemed .coupon-btn {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .coupon-card.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Carta Secreta Estilos */
+        .letter-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 14px;
+            padding: 15px;
+            min-height: 120px;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: #fff2cc;
+            text-align: left;
+            margin-bottom: 15px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: modalFadeIn 0.3s ease forwards;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 75vh;
+            border-radius: 16px;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.6);
+            object-fit: contain;
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 1.1rem;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #ffd700;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .close-modal:hover { transform: scale(1.2); }
+        
+        #music-controls {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            z-index: 100;
+            background: rgba(25, 16, 5, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            border-radius: 50px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        #music-controls span { font-size: 0.8rem; color: #ffd700; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <audio id="bgMusic" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <!-- PANTALLA 0: INICIO -->
+        <div class="flower-card active" id="card-0">
+            <h1 class="title-cursive">Flores Amarillas</h1>
+            <p class="subtitle">Desde el 18 de Mayo & Nuestro Camino</p>
+            
+            <!-- Contador en Vivo -->
+            <div class="counter-box">
+                <div class="counter-item"><span id="days">0</span><label>Días</label></div>
+                <div class="counter-item"><span id="hours">0</span><label>Horas</label></div>
+                <div class="counter-item"><span id="minutes">0</span><label>Minutos</label></div>
+                <div class="counter-item"><span id="seconds">0</span><label>Segundos</label></div>
+            </div>
+
+            <div class="flower-img-wrapper" onclick="openModal('images/00_ramo.jpg', 'Ramo de Flores Amarillas')">
+                <img src="images/00_ramo.jpg" alt="Ramo" class="flower-img">
+            </div>
+            <p class="click-hint">🔍 Haz clic en la foto para ampliar</p>
+
+            <p class="flower-message">
+                Cada flor representa un mes compartido... hasta llegar a tu favorita y a este recorrido especial que preparé para ti, mi amor.
+            </p>
+
+            <button class="btn" onclick="startJourney()">Comenzar Recorrido 💛</button>
+            <button class="btn btn-music" id="audio-toggle-btn" onclick="toggleMusic()">🎵 Reproducir Música</button>
+        </div>
+
+        <!-- FLOR 1: MES 1 -->
+        <div class="flower-card" id="card-1">
+            <span class="month-tag">Mes 1 • El Comienzo</span>
+            <div class="flower-img-wrapper" onclick="openModal('images/01_margarita.jpg', 'Margarita Amarilla')">
+                <img src="images/01_margarita.jpg" alt="Margarita" class="flower-img">
+            </div>
+            <p class="click-hint">🔍 Haz clic en la foto para ampliar</p>
+
+            <h2 class="flower-title">Margarita Amarilla</h2>
+            <p class="flower-message">
+                La alegría de cuando todo comenzó. Esos primeros días donde cada conversación me confirmaba que encontré a alguien extraordinaria.
+            </p>
+            <div class="dots-container">
+                <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+            <button class="btn" onclick="nextCard()">Siguiente Flor ➔</button>
+        </div>
+
+        <!-- FLOR 2: MES 2 -->
+        <div class="flower-card" id="card-2">
+            <span class="month-tag">Mes 2 • La Complicidad</span>
+            <div class="flower-img-wrapper" onclick="openModal('images/02_tulipan.jpg', 'Tulipán Amarillo')">
+                <img src="images/02_tulipan.jpg" alt="Tulipán" class="flower-img">
+            </div>
+            <p class="click-hint">🔍 Haz clic en la foto para ampliar</p>
+
+            <h2 class="flower-title">Tulipán Amarillo</h2>
+            <p class="flower-message">
+                Simboliza calidez y pensamientos alegres. En el segundo mes, nuestra complicidad creció y llenó de luz mis días.
+            </p>
+            <div class="dots-container">
+                <div class="dot"></div><div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+            <button class="btn" onclick="nextCard()">Siguiente Flor ➔</button>
+        </div>
+
+        <!-- FLOR 3: MES 3 -->
+        <div class="flower-card" id="card-3">
+            <span class="month-tag">Mes 3 • Cariño Profundo</span>
+            <div class="flower-img-wrapper" onclick="openModal('images/03_rosa.jpg', 'Rosa Amarilla')">
+                <img src="images/03_rosa.jpg" alt="Rosa" class="flower-img">
+            </div>
+            <p class="click-hint">🔍 Haz clic en la foto para ampliar</p>
+
+            <h2 class="flower-title">Rosa Amarilla</h2>
+            <p class="flower-message">
+                Gratitud y belleza de compartir la vida. Tres meses construyendo momentos juntos y apoyándonos siempre.
+            </p>
+            <div class="dots-container">
+                <div class="dot"></div><div class="dot"></div><div class="dot active"></div><div class="dot"></div>
+            </div>
+            <button class="btn" onclick="nextCard()">Ver el Gran Final 🌻</button>
+        </div>
+
+        <!-- FLOR 4: MES 4 / GIRASOL -->
+        <div class="flower-card" id="card-4">
+            <span class="anniversary-badge">¡4 Meses Juntos! 🎉</span>
+            <h1 class="title-cursive" style="font-size: 2rem;">Tu Flor Favorita</h1>
+            
+            <div class="flower-img-wrapper girasol-special" onclick="openModal('images/04_girasol.jpg', 'El Girasol')">
+                <img src="images/04_girasol.jpg" alt="Girasol" class="flower-img">
+            </div>
+            <p class="click-hint">🔍 Haz clic en la foto para ampliar</p>
+
+            <h2 class="flower-title" style="color: #ffd700;">El Girasol</h2>
+            <p class="flower-message">
+                El girasol busca siempre la luz. Para mí, tú eres esa luz. ¡Feliz 21 de Septiembre y feliz aniversario de 4 meses, mi amor! ❤️
+            </p>
+            <button class="btn" onclick="nextCard()">Ver Nuestros Recuerdos 📸</button>
+        </div>
+
+        <!-- GALERÍA DE FOTOS -->
+        <div class="flower-card" id="card-5">
+            <span class="anniversary-badge">Nuestros Momentos 📸</span>
+            <h2 class="flower-title">Galería de Recuerdos</h2>
+            <p class="click-hint">Toca cada foto para verla en grande</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                <div class="flower-img-wrapper gallery-img" style="width: 100%; height: 110px;" onclick="openModal('images/foto1.jpg', 'Momento Especial 1')">
+                    <img src="images/foto1.jpg" alt="Foto 1" class="flower-img">
+                </div>
+                <div class="flower-img-wrapper gallery-img" style="width: 100%; height: 110px;" onclick="openModal('images/foto2.jpg', 'Momento Especial 2')">
+                    <img src="images/foto2.jpg" alt="Foto 2" class="flower-img">
+                </div>
+                <div class="flower-img-wrapper gallery-img" style="width: 100%; height: 110px;" onclick="openModal('images/foto3.jpg', 'Momento Especial 3')">
+                    <img src="images/foto3.jpg" alt="Foto 3" class="flower-img">
+                </div>
+                <div class="flower-img-wrapper gallery-img" style="width: 100%; height: 110px;" onclick="openModal('images/foto4.jpg', 'Momento Especial 4')">
+                    <img src="images/foto4.jpg" alt="Foto 4" class="flower-img">
+                </div>
+            </div>
+
+            <button class="btn" onclick="nextCard()">Ver Cupones de Amor 🎟️</button>
+        </div>
+
+        <!-- CUPONES DE AMOR -->
+        <div class="flower-card" id="card-6">
+            <span class="anniversary-badge">Sorpresa 🎟️</span>
+            <h2 class="flower-title">Cupones Canjeables</h2>
+            <p class="click-hint">Elige con el corazón tu favorito</p>
+
+            <div class="coupon-grid">
+                <div class="coupon-card" id="cp-1" onclick="prepareCoupon(1)">
+                    <div class="coupon-info">
+                        <h4>💆‍♂️ Masaje relajante</h4>
+                        <p>Válido para un masaje</p>
+                    </div>
+                    <button class="coupon-btn" id="btn-cp-1">Canjear</button>
+                </div>
+                <div class="coupon-card" id="cp-2" onclick="prepareCoupon(2)">
+                    <div class="coupon-info">
+                        <h4>🍲 Cena / Comida rica</h4>
+                        <p>Válido para que te cocine algo rico</p>
+                    </div>
+                    <button class="coupon-btn" id="btn-cp-2">Canjear</button>
+                </div>
+                <div class="coupon-card" id="cp-3" onclick="prepareCoupon(3)">
+                    <div class="coupon-info">
+                        <h4>🎁 Sorpresa especial</h4>
+                        <p>Válido para una sorpresa especial</p>
+                    </div>
+                    <button class="coupon-btn" id="btn-cp-3">Canjear</button>
+                </div>
+            </div>
+
+            <button class="btn" onclick="nextCard()">Abrir Carta Secreta 💌</button>
+        </div>
+
+        <!-- CARTA SECRETA -->
+        <div class="flower-card" id="card-7">
+            <span class="anniversary-badge">Para Ti, Mi Amor 💌</span>
+            <h2 class="flower-title">Carta del Corazón</h2>
+            
+            <div class="letter-box">
+                Mi amor,<br><br>
+                Te pudiera comprar una rosa, pero duraría pocos días. En cambio esto lo podrás ver cuando quieras y dónde quieras.<br><br>
+                Gracias por estos 4 meses maravillosos desde aquel 18 de mayo, llenos de risas, apoyo y momentos inolvidables. Eres mi sol de todos los días.<br><br>
+                Te quiero amor ❤️
+            </div>
+
+            <button class="btn" onclick="resetJourney()">Volver al Inicio 🔄</button>
+        </div>
+    </div>
+
+    <div id="music-controls" onclick="toggleMusic()">
+        <span id="music-icon">🎵</span>
+        <span id="music-text">Música</span>
+    </div>
+
+    <!-- MODAL IMAGEN -->
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modalImg">
+        <div class="modal-title" id="modalCaption"></div>
+    </div>
+
+    <!-- MODAL AVISO ROMÁNTICO PARA CUPÓN -->
+    <div id="couponModal" class="modal" style="display: none;">
+        <div style="background: rgba(25, 16, 5, 0.95); border: 2px solid #ffd700; border-radius: 20px; padding: 25px; text-align: center; max-width: 320px; width: 90%; box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);">
+            <h3 style="color: #ffd700; font-family: 'Dancing Script', cursive; font-size: 2.2rem; margin-bottom: 8px;">Un solo latido... 💛</h3>
+            <p style="color: #ebd5b3; font-size: 0.88rem; line-height: 1.5; margin-bottom: 20px;" id="couponModalText">
+                Piensa muy bien cuál escoger, mi vida... Este detalle es único y solo puedes seleccionar un cupón especial. ¿Deseas confirmar este?
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn" style="max-width: 100%; margin: 0;" onclick="confirmCoupon()">Sí, este quiero ✨</button>
+                <button class="btn btn-music" style="max-width: 100%; margin: 0;" onclick="closeCouponModal()">Pensarlo otro poquito 🌻</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONTADOR DE TIEMPO
+        const startDate = new Date('2026-05-18T00:00:00');
+        function updateCounter() {
+            const now = new Date();
+            const diff = now - startDate;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / 1000 / 60) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('days').innerText = days;
+            document.getElementById('hours').innerText = hours;
+            document.getElementById('minutes').innerText = minutes;
+            document.getElementById('seconds').innerText = seconds;
+        }
+        setInterval(updateCounter, 1000);
+        updateCounter();
+
+        // NAVEGACIÓN
+        let currentCard = 0;
+        const totalCards = 8;
+        const bgMusic = document.getElementById('bgMusic');
+        const musicIcon = document.getElementById('music-icon');
+        const musicText = document.getElementById('music-text');
+        const audioToggleBtn = document.getElementById('audio-toggle-btn');
+        let isPlaying = false;
+
+        function startJourney() {
+            if (!isPlaying) {
+                bgMusic.play().then(() => {
+                    isPlaying = true;
+                    musicIcon.innerText = '🔊';
+                    musicText.innerText = 'Pausar';
+                    audioToggleBtn.innerText = '⏸️ Pausar Música';
+                }).catch(e => console.log(e));
+            }
+            nextCard();
+        }
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicIcon.innerText = '🔇';
+                musicText.innerText = 'Reproducir';
+                audioToggleBtn.innerText = '🎵 Reproducir Música';
+            } else {
+                bgMusic.play().then(() => {
+                    isPlaying = true;
+                    musicIcon.innerText = '🔊';
+                    musicText.innerText = 'Pausar';
+                    audioToggleBtn.innerText = '⏸️ Pausar Música';
+                }).catch(e => alert("Haz clic en la página para activar el audio."));
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function nextCard() {
+            document.getElementById(`card-${currentCard}`).classList.remove('active');
+            currentCard++;
+            if (currentCard < totalCards) {
+                document.getElementById(`card-${currentCard}`).classList.add('active');
+            }
+        }
+
+        function resetJourney() {
+            document.getElementById(`card-${currentCard}`).classList.remove('active');
+            currentCard = 0;
+            document.getElementById(`card-0`).classList.add('active');
+        }
+
+        // GESTIÓN DE CUPONES (¡Solo uno permitido!)
+        let pendingCouponId = null;
+        let couponRedeemed = false;
+
+        const couponNames = {
+            1: "Masaje relajante",
+            2: "Cena / Comida rica",
+            3: "Sorpresa especial"
+        };
+
+        function prepareCoupon(id) {
+            if (couponRedeemed) return;
+            pendingCouponId = id;
+            
+            document.getElementById('couponModalText').innerHTML = `Elige con el corazón y mucha calma, mi vida... <b style="color: #ffd700;">"${couponNames[id]}"</b> es un hermoso detalle, pero recuerda que solo puedes escoger un único cupón especial para guardar.<br><br>¿Es este el que deseas?`;
+            document.getElementById('couponModal').style.display = 'flex';
+        }
+
+        function closeCouponModal() {
+            document.getElementById('couponModal').style.display = 'none';
+            pendingCouponId = null;
+        }
+
+        function confirmCoupon() {
+            if (!pendingCouponId) return;
+            couponRedeemed = true;
+            closeCouponModal();
+
+            const card = document.getElementById(`cp-${pendingCouponId}`);
+            const btn = document.getElementById(`btn-cp-${pendingCouponId}`);
+            card.classList.add('redeemed');
+            btn.innerText = '¡Canjeado! 💖';
+
+            for (let i = 1; i <= 3; i++) {
+                const otherCard = document.getElementById(`cp-${i}`);
+                if (i !== pendingCouponId) {
+                    otherCard.classList.add('disabled');
+                }
+            }
+        }
+
+        // MODAL IMAGEN
+        function openModal(imgSrc, captionText) {
+            const modal = document.getElementById('imageModal');
+            document.getElementById('modalImg').src = imgSrc;
+            document.getElementById('modalCaption').innerText = captionText;
+            modal.style.display = "flex";
+        }
+        function closeModal() {
+            document.getElementById('imageModal').style.display = "none";
+        }
+
+        // PÉTALOS FLOTANTES
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        const particles = [];
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Petal {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = -20;
+                this.size = Math.random() * 8 + 4;
+                this.speedY = Math.random() * 1.5 + 0.8;
+                this.speedX = Math.sin(Math.random() * Math.PI) * 1;
+                this.rotation = Math.random() * 360;
+                this.rotSpeed = (Math.random() - 0.5) * 2;
+                this.opacity = Math.random() * 0.7 + 0.3;
+                this.color = Math.random() > 0.3 ? '#ffd700' : '#ff9100';
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y * 0.01) + this.speedX;
+                this.rotation += this.rotSpeed;
+                if (this.y > height + 20) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size, this.size / 2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        for (let i = 0; i < 40; i++) particles.push(new Petal());
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
